@@ -417,7 +417,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           aria-label="Main navigation header"
         >
           <div className="sm-logo flex items-center select-none pointer-events-auto" aria-label="Logo">
-             <span className="font-headline text-2xl" style={{color: menuButtonColor}}>The Volrx</span>
+             <span className="font-headline text-2xl" style={{color: menuButtonColor}}>Beschi Capital</span>
           </div>
 
           <button

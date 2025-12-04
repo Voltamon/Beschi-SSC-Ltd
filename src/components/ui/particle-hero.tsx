@@ -226,7 +226,7 @@ export function ParticleHero({ onEnterClick }: ParticleHeroProps) {
         <div ref={containerRef} className="absolute inset-0 z-0" />
         <div className="relative z-10 flex h-full w-full flex-col items-center justify-center text-center p-4 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
             <h1 className="text-6xl md:text-8xl font-headline tracking-tight text-primary mb-4">
-                The Volrx
+                Beschi Capital
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mb-8">
                 An exploration of digital art with captivating visual effects.

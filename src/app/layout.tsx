@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'The Volrx',
+  title: 'Beschi Capital',
   description: 'An exploration of digital art with captivating visual effects.',
 };
 
