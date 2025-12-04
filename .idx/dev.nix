@@ -3,6 +3,8 @@
   packages = [
     pkgs.nodejs_20
     pkgs.git-lfs
+    pkgs.python311
+    pkgs.python311Packages.pip
   ];
   idx.extensions = [
     
