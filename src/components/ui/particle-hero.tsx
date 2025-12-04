@@ -102,7 +102,7 @@ export function ParticleHero({ onEnterClick }: ParticleHeroProps) {
     const particleSpread = 10;
     const speed = 0.1;
     const particleColors = ['#B77466', '#FFE1AF', '#E2B59A', '#957C62'];
-    const moveParticlesOnHover = false;
+    const moveParticlesOnHover = true;
     const particleHoverFactor = 1;
     const alphaParticles = false;
     const particleBaseSize = 130;
