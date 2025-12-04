@@ -1,31 +1,65 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ----------------------------------------------------
+# Node / Next.js / Firebase Studio CLEAN GITIGNORE
+# ----------------------------------------------------
 
-# Dependencies
-/node_modules
-/.pnp
-.pnp.js
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-store/
 
-# Testing
-/coverage
-
-# Next.js build output
-/.next/
-/out/
-
-# Production
-/build
-
-# Other
-.DS_Store
-*.pem
-
-# private env files
-.env*.local
+# Environment files
 .env
+.env.local
+.env.development
+.env.production
+.env.test
 
-# vercel
-.vercel
+# Build output
+.next/
+out/
+dist/
 
-# typescript
+# Firebase / Google tools
+.firebase/
+.firebase-tools/
+firebase-debug.log
+.firebaserc.backup
+.functions/
+
+# Firebase Studio generated files
+studio/
+studio-*/ # Firebase Studio build dirs
+firebase.json.backup
+service-account*.json
+
+# Logs
+*.log
+logs/
+logs/*.log
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# System files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# OS junk
+*.swp
+*.swo
+*~
+*.tmp
+
+# TypeScript
 *.tsbuildinfo
-next-env.d.ts
+
+# Misc
+coverage/
+cache/
+temp/
+*.bak
