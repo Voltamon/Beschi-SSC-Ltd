@@ -48,12 +48,12 @@ export function VerticalTimeline({ entries }: VerticalTimelineProps) {
                 const content = item.querySelector('.timeline-content');
                 const fromLeft = item.classList.contains('timeline-item-left');
                 
-                gsap.set(content, { autoAlpha: 0, x: fromLeft ? '-100%' : '100%' });
+                gsap.set(content, { autoAlpha: 0, x: fromLeft ? -50 : 50 });
 
                 gsap.to(content, {
                     autoAlpha: 1,
-                    x: '0%',
-                    duration: 1,
+                    x: 0,
+                    duration: 0.8,
                     ease: 'power3.out',
                     scrollTrigger: {
                         trigger: item,
@@ -152,34 +152,28 @@ function TimelineEntryItem({ entry, isLeft }: { entry: TimelineEntry; isLeft: bo
     return (
          <div 
             className={cn(
-                "relative w-full flex my-8 timeline-item-container",
-                isLeft ? "justify-start timeline-item-left" : "justify-end ml-auto timeline-item-right"
+                "relative w-full flex my-8 timeline-item-container group",
+                isLeft ? "justify-start timeline-item-left" : "justify-end timeline-item-right"
             )}
         >
             <div className={cn(
-                "w-1/2",
-                isLeft ? "pr-8" : "pl-8"
+                "w-[calc(50%-2.5rem)]",
+                isLeft ? "pr-0" : "pl-0"
             )}>
-                 <div className={cn(
-                        "relative w-full group timeline-content"
+                 <div ref={tiltRef} className={cn(
+                        "relative w-full p-6 rounded-lg shadow-lg bg-card/60 border border-card transition-all duration-300",
+                        "group-hover:shadow-2xl group-hover:bg-card/80 group-hover:border-primary/50 group-hover:backdrop-blur-sm",
+                        isLeft ? "text-right" : "text-left"
                     )}>
-                        <div className={cn(
-                            "absolute top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center text-primary-foreground z-10 shadow-lg",
-                            isLeft ? "right-[-24px]" : "left-[-24px]",
-                        )}>
-                            <div className={cn("w-full h-full rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:shadow-xl")} style={{backgroundColor: entry.color}}>
-                                <Icon className="w-6 h-6 text-primary-foreground transition-transform duration-300 group-hover:rotate-12"/>
-                            </div>
-                        </div>
+                    <h3 className="text-2xl font-headline text-foreground">{entry.heading}</h3>
+                    <p className="mt-2 text-muted-foreground">{entry.paragraph}</p>
+                </div>
+            </div>
 
-                        <div ref={tiltRef} className={cn(
-                            "p-6 rounded-lg shadow-lg w-full bg-card transition-shadow duration-300 group-hover:shadow-xl",
-                            isLeft ? "text-right" : "text-left"
-                        )}>
-                            <h3 className="text-2xl font-headline text-foreground">{entry.heading}</h3>
-                            <p className="mt-2 text-muted-foreground">{entry.paragraph}</p>
-                        </div>
-                    </div>
+            <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center text-primary-foreground z-10 shadow-lg">
+                 <div className={cn("w-full h-full rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:shadow-xl")} style={{backgroundColor: entry.color}}>
+                    <Icon className="w-6 h-6 text-primary-foreground transition-transform duration-300 group-hover:rotate-12"/>
+                </div>
             </div>
         </div>
     );
