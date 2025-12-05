@@ -45,22 +45,29 @@ export function VerticalTimeline({ entries }: VerticalTimelineProps) {
             }
 
             items.forEach((item) => {
-                const content = item.querySelector('.timeline-content');
-                const fromLeft = item.classList.contains('timeline-item-left');
-                
-                gsap.set(content, { autoAlpha: 0, x: fromLeft ? -50 : 50 });
+                const content = item.querySelector('.timeline-content') as HTMLElement | null;
+                if (!content) return;
 
-                gsap.to(content, {
-                    autoAlpha: 1,
-                    x: 0,
-                    duration: 0.8,
-                    ease: 'power3.out',
-                    scrollTrigger: {
-                        trigger: item,
-                        start: 'top 80%',
-                        toggleActions: 'play none none reverse',
-                    },
-                });
+                const fromLeft = item.classList.contains('timeline-item-left');
+                const xStart = fromLeft ? -100 : 100;
+
+                gsap.fromTo(content, 
+                    { x: xStart, autoAlpha: 0, scale: 0.8 }, 
+                    {
+                        x: 0,
+                        autoAlpha: 1,
+                        scale: 1,
+                        duration: 1,
+                        ease: 'power3.out',
+                        scrollTrigger: {
+                            trigger: item,
+                            start: 'top 85%',
+                            end: 'top 50%',
+                            scrub: 1,
+                            toggleActions: 'play none none reverse',
+                        },
+                    }
+                );
             });
         }, timeline);
 
@@ -161,8 +168,9 @@ function TimelineEntryItem({ entry, isLeft }: { entry: TimelineEntry; isLeft: bo
                 isLeft ? "pr-0" : "pl-0"
             )}>
                  <div ref={tiltRef} className={cn(
-                        "relative w-full p-6 rounded-lg shadow-lg bg-card/60 border border-card transition-all duration-300",
-                        "group-hover:shadow-2xl group-hover:bg-card/80 group-hover:border-primary/50 group-hover:backdrop-blur-sm",
+                        "relative w-full p-6 rounded-lg shadow-lg transition-all duration-300 border border-transparent",
+                        "hover:shadow-2xl hover:border-primary/50 hover:bg-card/20 hover:backdrop-blur-sm",
+                        "timeline-content", // Added for GSAP selection
                         isLeft ? "text-right" : "text-left"
                     )}>
                     <h3 className="text-2xl font-headline text-foreground">{entry.heading}</h3>
