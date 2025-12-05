@@ -52,19 +52,17 @@ export function VerticalTimeline({ entries }: VerticalTimelineProps) {
                 const xStart = fromLeft ? -100 : 100;
 
                 gsap.fromTo(content, 
-                    { x: xStart, autoAlpha: 0, scale: 0.8 }, 
+                    { xPercent: xStart, autoAlpha: 0, scale: 0.8 }, 
                     {
-                        x: 0,
+                        xPercent: 0,
                         autoAlpha: 1,
                         scale: 1,
-                        duration: 1,
                         ease: 'power3.out',
                         scrollTrigger: {
                             trigger: item,
                             start: 'top 85%',
                             end: 'top 50%',
                             scrub: 1,
-                            toggleActions: 'play none none reverse',
                         },
                     }
                 );
@@ -163,24 +161,22 @@ function TimelineEntryItem({ entry, isLeft }: { entry: TimelineEntry; isLeft: bo
                 isLeft ? "justify-start timeline-item-left" : "justify-end timeline-item-right"
             )}
         >
-            <div className={cn(
-                "w-[calc(50%-2.5rem)]",
-                isLeft ? "pr-0" : "pl-0"
-            )}>
+             <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center text-primary-foreground z-10 shadow-lg">
+                 <div className={cn("w-full h-full rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:shadow-xl")} style={{backgroundColor: entry.color}}>
+                    <Icon className="w-6 h-6 text-primary-foreground transition-transform duration-300 group-hover:rotate-12"/>
+                </div>
+            </div>
+
+            <div className={cn("w-[calc(50%-2.5rem)]", isLeft ? "mr-auto" : "ml-auto")}>
                  <div ref={tiltRef} className={cn(
-                        "relative w-full p-6 rounded-lg shadow-lg transition-all duration-300 border border-transparent",
-                        "hover:shadow-2xl hover:border-primary/50 hover:bg-card/20 hover:backdrop-blur-sm",
-                        "timeline-content", // Added for GSAP selection
+                        "relative w-full p-6 rounded-lg shadow-lg transition-all duration-300",
+                        "bg-card/10 border border-foreground/20 backdrop-blur-sm",
+                        "hover:shadow-2xl hover:border-primary/50 hover:bg-card/20",
+                        "timeline-content",
                         isLeft ? "text-right" : "text-left"
                     )}>
                     <h3 className="text-2xl font-headline text-foreground">{entry.heading}</h3>
                     <p className="mt-2 text-muted-foreground">{entry.paragraph}</p>
-                </div>
-            </div>
-
-            <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-12 h-12 rounded-full flex items-center justify-center text-primary-foreground z-10 shadow-lg">
-                 <div className={cn("w-full h-full rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:shadow-xl")} style={{backgroundColor: entry.color}}>
-                    <Icon className="w-6 h-6 text-primary-foreground transition-transform duration-300 group-hover:rotate-12"/>
                 </div>
             </div>
         </div>
