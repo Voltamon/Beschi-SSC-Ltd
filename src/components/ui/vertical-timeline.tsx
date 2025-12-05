@@ -22,22 +22,18 @@ type VerticalTimelineProps = {
 
 export function VerticalTimeline({ entries }: VerticalTimelineProps) {
     const timelineRef = useRef<HTMLDivElement>(null);
-    const lineRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const timeline = timelineRef.current;
-        const line = lineRef.current;
-        const items = gsap.utils.toArray('.timeline-item-container') as HTMLElement[];
+        if (!timeline) return;
 
-        if (!timeline || !line || items.length === 0) return;
+        const items = gsap.utils.toArray('.timeline-item-container') as HTMLElement[];
+        const line = timeline.querySelector('.timeline-line-fill');
 
         const ctx = gsap.context(() => {
-            // Animate the line filling up
-            gsap.fromTo(line, 
-                { scaleY: 0 },
-                {
+            if (line) {
+                 gsap.to(line, {
                     scaleY: 1,
-                    backgroundColor: '#5C4033', // Dark brown
                     ease: 'none',
                     scrollTrigger: {
                         trigger: timeline,
@@ -45,23 +41,24 @@ export function VerticalTimeline({ entries }: VerticalTimelineProps) {
                         end: 'bottom bottom',
                         scrub: true,
                     },
-                }
-            );
+                });
+            }
 
-            // Animate each item
             items.forEach((item) => {
-                const isLeft = item.parentElement?.classList.contains('timeline-item-left');
                 const content = item.querySelector('.timeline-content');
-                gsap.from(content, {
-                    xPercent: isLeft ? -50 : 50,
-                    opacity: 0,
-                    ease: 'power2.out',
+                const fromLeft = item.classList.contains('timeline-item-left');
+                
+                gsap.set(content, { autoAlpha: 0, x: fromLeft ? '-100%' : '100%' });
+
+                gsap.to(content, {
+                    autoAlpha: 1,
+                    x: '0%',
                     duration: 1,
+                    ease: 'power3.out',
                     scrollTrigger: {
                         trigger: item,
                         start: 'top 80%',
-                        end: 'top 50%',
-                        scrub: 1.5,
+                        toggleActions: 'play none none reverse',
                     },
                 });
             });
@@ -73,13 +70,12 @@ export function VerticalTimeline({ entries }: VerticalTimelineProps) {
     return (
         <div ref={timelineRef} className="relative w-full max-w-6xl mx-auto py-16">
             <div 
-                className="absolute top-0 w-1 bg-border/20 left-1/2 -translate-x-1/2"
-                style={{ height: '100%' }}
+                className="absolute top-0 bottom-0 w-1 bg-border/20 left-1/2 -translate-x-1/2"
+                aria-hidden="true"
             >
                 <div 
-                    ref={lineRef}
-                    className="w-full bg-primary origin-top"
-                    style={{ height: '100%' }}
+                    className="w-full h-full bg-primary origin-top timeline-line-fill"
+                    style={{ transform: 'scaleY(0)' }}
                 />
             </div>
             
@@ -96,11 +92,10 @@ export function VerticalTimeline({ entries }: VerticalTimelineProps) {
 
 function use3DTilt() {
     const ref = useRef<HTMLDivElement>(null);
-    const isTouchDevice = useRef(false);
 
     useEffect(() => {
-        isTouchDevice.current = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        if (isTouchDevice.current) return;
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        if (isTouchDevice) return;
         
         const el = ref.current;
         if (!el) return;
@@ -155,41 +150,37 @@ function TimelineEntryItem({ entry, isLeft }: { entry: TimelineEntry; isLeft: bo
     const tiltRef = use3DTilt();
 
     return (
-        <section 
+         <div 
             className={cn(
-                "min-h-[30vh] w-full flex items-center justify-center py-8 timeline-item",
-                isLeft ? 'timeline-item-left' : 'timeline-item-right'
+                "relative w-full flex my-8 timeline-item-container",
+                isLeft ? "justify-start timeline-item-left" : "justify-end ml-auto timeline-item-right"
             )}
         >
-            <div className="relative w-full px-4 timeline-item-container">
-                <div className={cn(
-                    "flex w-full md:w-1/2 items-center",
-                    isLeft ? "justify-start" : "md:justify-end md:ml-auto"
-                )}>
-                     <div className={cn(
-                        "relative w-full max-w-sm group timeline-content"
+            <div className={cn(
+                "w-1/2",
+                isLeft ? "pr-8" : "pl-8"
+            )}>
+                 <div className={cn(
+                        "relative w-full group timeline-content"
                     )}>
                         <div className={cn(
-                            "absolute top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-primary-foreground z-10",
-                            isLeft ? "md:-right-5 md:left-auto" : "left-0 md:-left-5",
-                            "left-0 -translate-x-1/2 md:translate-x-0"
+                            "absolute top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center text-primary-foreground z-10 shadow-lg",
+                            isLeft ? "right-[-24px]" : "left-[-24px]",
                         )}>
-                            <div className={cn("w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:shadow-xl")} style={{backgroundColor: entry.color}}>
+                            <div className={cn("w-full h-full rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:shadow-xl")} style={{backgroundColor: entry.color}}>
                                 <Icon className="w-6 h-6 text-primary-foreground transition-transform duration-300 group-hover:rotate-12"/>
                             </div>
                         </div>
 
                         <div ref={tiltRef} className={cn(
                             "p-6 rounded-lg shadow-lg w-full bg-card transition-shadow duration-300 group-hover:shadow-xl",
-                             isLeft ? "md:text-right" : "md:text-left",
-                             "ml-10 md:ml-0 text-left"
+                            isLeft ? "text-right" : "text-left"
                         )}>
                             <h3 className="text-2xl font-headline text-foreground">{entry.heading}</h3>
                             <p className="mt-2 text-muted-foreground">{entry.paragraph}</p>
                         </div>
                     </div>
-                 </div>
             </div>
-        </section>
+        </div>
     );
 }
