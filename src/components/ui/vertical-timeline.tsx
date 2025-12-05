@@ -27,7 +27,7 @@ export function VerticalTimeline({ entries }: VerticalTimelineProps) {
     useEffect(() => {
         const timeline = timelineRef.current;
         const line = lineRef.current;
-        const items = gsap.utils.toArray('.timeline-item') as HTMLElement[];
+        const items = gsap.utils.toArray('.timeline-item-container') as HTMLElement[];
 
         if (!timeline || !line || items.length === 0) return;
 
@@ -50,7 +50,7 @@ export function VerticalTimeline({ entries }: VerticalTimelineProps) {
 
             // Animate each item
             items.forEach((item) => {
-                const isLeft = item.classList.contains('timeline-item-left');
+                const isLeft = item.parentElement?.classList.contains('timeline-item-left');
                 const content = item.querySelector('.timeline-content');
                 gsap.from(content, {
                     xPercent: isLeft ? -50 : 50,
@@ -94,8 +94,65 @@ export function VerticalTimeline({ entries }: VerticalTimelineProps) {
     );
 }
 
+function use3DTilt() {
+    const ref = useRef<HTMLDivElement>(null);
+    const isTouchDevice = useRef(false);
+
+    useEffect(() => {
+        isTouchDevice.current = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        if (isTouchDevice.current) return;
+        
+        const el = ref.current;
+        if (!el) return;
+
+        gsap.set(el, { transformStyle: 'preserve-3d', perspective: 1000 });
+
+        const onMouseMove = (e: MouseEvent) => {
+            const { clientX, clientY } = e;
+            const { left, top, width, height } = el.getBoundingClientRect();
+            const x = (clientX - left) / width;
+            const y = (clientY - top) / height;
+
+            const rotateX = gsap.utils.mapRange(0, 1, -15, 15)(y);
+            const rotateY = gsap.utils.mapRange(0, 1, 15, -15)(x);
+
+            gsap.to(el, {
+                duration: 0.3,
+                rotationX: rotateX,
+                rotationY: rotateY,
+                scale: 1.03,
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
+                ease: 'power2.out',
+            });
+        };
+
+        const onMouseLeave = () => {
+            gsap.to(el, {
+                duration: 0.3,
+                rotationX: 0,
+                rotationY: 0,
+                scale: 1,
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                ease: 'power2.out',
+            });
+        };
+
+        el.addEventListener('mousemove', onMouseMove);
+        el.addEventListener('mouseleave', onMouseLeave);
+
+        return () => {
+            el.removeEventListener('mousemove', onMouseMove);
+            el.removeEventListener('mouseleave', onMouseLeave);
+        };
+    }, []);
+
+    return ref;
+}
+
+
 function TimelineEntryItem({ entry, isLeft }: { entry: TimelineEntry; isLeft: boolean; }) {
     const Icon = entry.icon;
+    const tiltRef = use3DTilt();
 
     return (
         <section 
@@ -104,7 +161,7 @@ function TimelineEntryItem({ entry, isLeft }: { entry: TimelineEntry; isLeft: bo
                 isLeft ? 'timeline-item-left' : 'timeline-item-right'
             )}
         >
-            <div className="relative w-full px-4">
+            <div className="relative w-full px-4 timeline-item-container">
                 <div className={cn(
                     "flex w-full md:w-1/2 items-center",
                     isLeft ? "justify-start" : "md:justify-end md:ml-auto"
@@ -122,7 +179,7 @@ function TimelineEntryItem({ entry, isLeft }: { entry: TimelineEntry; isLeft: bo
                             </div>
                         </div>
 
-                        <div className={cn(
+                        <div ref={tiltRef} className={cn(
                             "p-6 rounded-lg shadow-lg w-full bg-card transition-shadow duration-300 group-hover:shadow-xl",
                              isLeft ? "md:text-right" : "md:text-left",
                              "ml-10 md:ml-0 text-left"
